@@ -59,7 +59,7 @@
 
           <!-- Select Duration Combobox -->
                 <v-row>
-              <v-col>
+              <v-col cols>
                 <v-select
                   label="เวลา"
                   v-model="appointments.durationId"
@@ -71,29 +71,37 @@
                   required
                 ></v-select>
               </v-col>
+</v-row>
+        <!-- Date Picker -->
+        <v-row>
+        <v-col >
+        <v-menu
+          v-model="menu1"
+          :close-on-content-click="false"
+          full-width
+          max-width="290"
+        >
+          <template v-slot:activator="{ on }">
+            <v-text-field
+              :value="computedDateFormattedMomentjs"
+              clearable
+              label="เลือกวันนัด"
+              readonly
+              prepend-icon="event"
+              v-on="on"
+              locale="th"
+            ></v-text-field>
+          </template>
+          <v-date-picker
+          locale="th"
+            v-model="date"
+            @change="menu1 = false"
+          ></v-date-picker>
+        </v-menu>
+      </v-col>
+      </v-row>
+        <!-- ///////////////////////////////////////////// Date Picker -->
 
-              <v-col md="6">
-                        <v-menu ref="menu" v-model="menu"
-                            :close-on-content-click="false"
-                            :return-value.sync="date"
-                            transition="scale-transition"
-                            offset-y
-                            full-width
-                            min-width="290px"
-                        ><template v-slot:activator="{ on }">
-                            <v-text-field v-model="date" label="Select Date" prepend-icon="event" readonly v-on="on"
-                            ></v-text-field>
-                        </template>
-                        
-                        <v-date-picker v-model="date" no-title scrollable>
-                            <div class="flex-grow-1"></div>
-                                <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
-                            <v-btn text color="primary" @click="$refs.menu.save(date)">OK</v-btn>
-                        </v-date-picker>
-                        </v-menu>
-                        </v-col>
-
-            </v-row>
             <!-- ///////////End Select Time Combobox -->
 
             <!-- Select Room Combobox -->
@@ -136,9 +144,18 @@
 </template>
 
 <script>
-import http from "../http-common";
+import http from "../http-common"
+import moment from 'moment'
+
 
 export default {
+
+  computed: {
+      computedDateFormattedMomentjs () {
+        return this.date ? moment(this.date).format('dddd Do, MMMM YYYY') : ''
+      },
+    },
+    
   name: "appointments",
   data() {
     return {
@@ -148,16 +165,19 @@ export default {
         roomId: "",
         durationId: "",
         detail: "",
-
-      date: new Date().toISOString().substr(0, 10),
-
-
       },
       valid: false,
       patientCheck: false,
-      patientName: ""
+      patientName: "",
+      // ส่วนของ DatePicker
+      appmDate : new Date().toISOString().substr(0, 10),
+      menu: false,
+      modal: false,
+      menu2: false,
+      date : new Date().toISOString().substr(0, 10),
     };
   },
+
   methods: {
     /* eslint-disable no-console */
 
@@ -217,11 +237,11 @@ export default {
     },
     // function เมื่อกดปุ่ม submit
     saveAppointments() {
+      console.log(this.appointments);
       http
         .post(
           "/appointments/" + this.appointments.patientId + "/" + this.appointments.employeeId + "/" +this.appointments.roomId +
-            "/" + this.appointments.durationId + "/" + this.appointments.date + "/" + this.appointments.detail,this.appointments 
-            //+ "/" + this.appointments.date,this.appointments
+            "/" + this.appointments.durationId + "/" + this.date + "/" + this.appointments.detail,this.appointments 
         )
        //.then(response => {
        //   console.log(response);
@@ -240,11 +260,11 @@ export default {
      this.getEmployees();
      this.Rooms();
      this.getDurations();
-    }
+    },
 
     
     /* eslint-enable no-console */
-  },
+    },
   mounted() {
     this.getEmployees();
     this.getRooms();
@@ -252,5 +272,7 @@ export default {
   }
 };
 
+
+ 
 
 </script>
