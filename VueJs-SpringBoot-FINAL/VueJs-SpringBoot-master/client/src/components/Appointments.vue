@@ -40,7 +40,7 @@
 
           <div v-if="patientCheck">
 
-              <!-- Select Doctor Combobox -->
+              <!-- เลือกแพทย์ Combobox -->
           <v-row justify="center">
             <v-col>
                 <v-select
@@ -55,9 +55,9 @@
                 ></v-select>
               </v-col>
                </v-row>
-          <!-- ///////////End Select Doctor Combobox -->
+          <!-- ///////////จบส่วน เลือกแพทย์ Combobox -->
 
-          <!-- Select Duration Combobox -->
+          <!-- เลือกช่วงเวลา Combobox -->
                 <v-row>
               <v-col cols>
                 <v-select
@@ -71,8 +71,10 @@
                   required
                 ></v-select>
               </v-col>
-</v-row>
-        <!-- Date Picker -->
+              </v-row>
+              <!-- ///////////จบส่วน เลือกช่วงเวลา Combobox -->
+
+        <!-- เลือกวันนัด -->
         <v-row>
         <v-col >
         <v-menu
@@ -100,11 +102,9 @@
         </v-menu>
       </v-col>
       </v-row>
-        <!-- ///////////////////////////////////////////// Date Picker -->
+        <!-- ///////////////////////////////////////////// จบส่วนเลือกวันนัด -->
 
-            <!-- ///////////End Select Time Combobox -->
-
-            <!-- Select Room Combobox -->
+            <!-- เลือกห้องตรวจ Combobox -->
             <v-row>
               <v-col>
                 <v-select
@@ -119,21 +119,72 @@
                 ></v-select>
               </v-col>
             </v-row>
-            <!-- ///////////End Select Room Combobox -->
+            <!-- ///////////จบส่วนเลือกห้องตรวจ Combobox -->
 
-            <!-- Detail Text area -->
+            <!-- รายละเอียด Text area -->
             <v-row>
               <v-col>
                   <v-textarea block prepend-icon="comment" label="รายละเอียด" v-model="appointments.detail"></v-textarea>
               </v-col>
             </v-row>
-            <!-- ///////////End Detail Text area -->
+            <!-- ///////////จบส่วน รายละเอียด Text area -->
 
+           <!--ปุ่ม Clear -->
             <v-row justify="center">
-              <v-col cols="12">
-                <v-btn @click="saveAppointments" :class="{ red: !valid, green: valid }">submit</v-btn>
-                <v-btn style="margin-left: 15px;" @click="clear">clear</v-btn>
+                
+                <v-btn class="mt-6" style="margin-left: 15px;" @click="clear">ล้างข้อมูล</v-btn>
+                <div class="text-center">
+                  <!--สรุปรายละเอียดการนัด Button Sheet -->
+    <v-bottom-sheet v-model="sheet">
+      <template v-slot:activator="{ on }">
+        <v-btn
+          :class="{ red: !valid, green: valid }"
+          dark
+          v-on="on"
+        >
+          สรุปรายละเอียด
+        </v-btn>
+      </template>
+      <v-sheet class="text-center" height="500px">
+<v-btn @click="sheet = !sheet" class="mt-6" tile outlined color="teal">
+      <v-icon left>mdi-pencil</v-icon> แก้ไขข้อมูล
+    </v-btn>
+
+        <div id="printMe">
+          <v-container>
+
+            <!-- SOURCE -->
+          <h1>รายละเอียดการออกใบนัด</h1> <br> 
+           <!--patientName: "",
+      EmployeeName: "",
+      RoomTitle:"",
+      
+      DutationTitle:"",
+      detailPrint:"",-->
+            <v-row> <v-col md="4">
+             <p>แพทย์ผู้ออกใบนัด :{{this.appointments.patientId}}</p>
+              </v-col></v-row>
+            <v-row>
+              <v-col cols="6" md="4">
+             <p>รหัสผู้ป่วย :{{this.appointments.patientId}}</p>
               </v-col>
+              <v-col cols="1" md="4"> 
+             <p>ชื่อผู้ป่วย : {{this.patientName}}</p>
+              </v-col>
+            </v-row>
+ 
+     </v-container>
+    </div>
+  <!-- OUTPUT -->
+    <v-btn @click="print" style="margin-left: 15px;">Print</v-btn>
+    <v-btn @click="saveAppointments" :class="{ red: !valid, green: valid }">บันทึกข้อมูล</v-btn>
+
+<v-btn block color="secondary" dark>Block Button</v-btn>
+         
+          
+      </v-sheet>
+    </v-bottom-sheet>
+  </div>
             </v-row>
             <br />
           </div>
@@ -141,12 +192,33 @@
       </v-col>
     </v-row>
   </v-container>
+  
 </template>
 
 <script>
 import http from "../http-common"
 import moment from 'moment'
+import Vue from 'vue';
+import VueHtmlToPaper from 'vue-html-to-paper';
 
+const options = {
+  name: '_blank',
+  specs: [
+    'fullscreen=yes',
+    'titlebar=yes',
+    'scrollbars=yes'
+  ],
+  styles: [
+    'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css',
+    'https://unpkg.com/kidlat-css/css/kidlat.css'
+  ]
+}
+ 
+Vue.use(VueHtmlToPaper, options);
+ 
+// or, using the defaults with no stylesheet
+ 
+Vue.use(VueHtmlToPaper);
 
 export default {
 
@@ -166,9 +238,15 @@ export default {
         durationId: "",
         detail: "",
       },
+      sheet: false,
       valid: false,
       patientCheck: false,
       patientName: "",
+      EmployeeName: "",
+      RoomTitle:"",
+      DutationTitle:"",
+      detailPrint:"",
+      output: null,
       // ส่วนของ DatePicker
       appmDate : new Date().toISOString().substr(0, 10),
       menu: false,
@@ -179,6 +257,14 @@ export default {
   },
 
   methods: {
+
+    //ปริ้น
+    print() {
+      // Pass the element id here
+      this.$htmlToPaper('printMe');
+    },
+
+
     /* eslint-disable no-console */
 
     // ดึงข้อมูล Employee ใส่ combobox
@@ -243,15 +329,16 @@ export default {
           "/appointments/" + this.appointments.patientId + "/" + this.appointments.employeeId + "/" +this.appointments.roomId +
             "/" + this.appointments.durationId + "/" + this.date + "/" + this.appointments.detail,this.appointments 
         )
-       //.then(response => {
-       //   console.log(response);
-      //    this.$router.push("/view");
-       // })
+       .then(response => {
+          console.log(response);
+          this.$router.push("/viewAppm");
+        })
         .catch(e => {
           console.log(e);
         });
       this.submitted = true;
     },
+    //ปริ้นใบนัด
     clear() {
       this.$refs.form.reset();
       this.patientCheck = false;

@@ -3,13 +3,13 @@
     <v-layout text-center wrap>
       <v-flex mb-4>
         <br />
-        <h1 class="display-2 font-weight-bold mb-3">Video Rental Information</h1>
+        <h1 class="display-2 font-weight-bold mb-3">ใบนัดทั้งหมด</h1>
       </v-flex>
     </v-layout>
 
     <v-row justify="center">
-      <v-col cols="8">
-        <v-data-table :headers="headers" :items="items" :items-per-page="5" class="elevation-1">
+      <v-col cols="15">
+        <v-data-table :headers="headers" :items="items" :items-per-page="10" class="elevation-1">
         </v-data-table>
       </v-col>
     </v-row>
@@ -24,15 +24,17 @@ export default {
   data() {
     return {
       headers: [
-        { text: "Employee", value: "createdBy.name" },
+        { text: "รหัสใบนัด", value: "id" },
+        { text: "แพทย์", value: "createdBy.name" },
         {
-          text: "Patient",
+          text: "ผู้ป่วย",
           align: "left",
           sortable: false,
           value: "appmPatient.name"
         },
-        { text: "Duration", value: "duration.name" },
-        { text: "Room", value: "room.title" }
+        { text: "วันที่นัด", value: "appmDate" },
+        { text: "เวลานัด", value: "duration.name" },
+        { text: "ห้องตรวจ", value: "room.title" },
       ],
       items: []
     };
@@ -42,7 +44,7 @@ export default {
     // ดึงข้อมูล VideoRental ใส่ combobox
     getAppointments() {
       http
-        .get("/appointment")
+        .get("/appointments")
         .then(response => {
           this.items = response.data;
           console.log(this.items);
