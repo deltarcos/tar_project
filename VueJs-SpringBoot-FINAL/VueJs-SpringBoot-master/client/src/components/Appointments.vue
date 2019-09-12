@@ -25,6 +25,8 @@
              
 
               <p v-if="patientCheck != ''">ชื่อผู้ป่วย : {{patientName}}</p>
+              
+
             </v-col>
             <!-- ///////////Patient ID text field -->
 
@@ -46,6 +48,7 @@
                 <v-select
                   label="แพทย์ผู้ออกใบนัด"
                   v-model="appointments.employeeId"
+                  
                   :items="employees"
                   item-text="name"
                   item-value="id"
@@ -132,27 +135,22 @@
            <!--ปุ่ม Clear -->
             <v-row justify="center">
                 
-                <v-btn class="mt-6" style="margin-left: 15px;" @click="clear">ล้างข้อมูล</v-btn>
+                <!-- <v-btn class="mt-6" style="margin-left: 15px;" @click="clear">ล้างข้อมูล</v-btn> -->
                 <div class="text-center">
                   <!--สรุปรายละเอียดการนัด Button Sheet -->
     <v-bottom-sheet v-model="sheet">
       <template v-slot:activator="{ on }">
-        <v-btn
-          :class="{ red: !valid, green: valid }"
-          dark
-          v-on="on"
-        >
-          สรุปรายละเอียด
-        </v-btn>
+        <v-btn prepend-icon="check_box" :class="{ red: !valid, green: valid } " dark v-on="on">สรุปรายละเอียด</v-btn>
       </template>
+  
       <v-sheet class="text-center" height="500px">
-<v-btn @click="sheet = !sheet" class="mt-6" tile outlined color="teal">
-      <v-icon left>mdi-pencil</v-icon> แก้ไขข้อมูล
-    </v-btn>
+        
 
         <div id="printMe">
           <v-container>
-
+            <v-row justify="center">
+             <v-col justify="center" cols="6">
+            <v-form v-model="valid" ref="form" >
             <!-- SOURCE -->
           <h1>รายละเอียดการออกใบนัด</h1> <br> 
            <!--patientName: "",
@@ -161,26 +159,52 @@
       
       DutationTitle:"",
       detailPrint:"",-->
-            <v-row> <v-col md="4">
-             <p>แพทย์ผู้ออกใบนัด :{{this.appointments.patientId}}</p>
-              </v-col></v-row>
-            <v-row>
-              <v-col cols="6" md="4">
-             <p>รหัสผู้ป่วย :{{this.appointments.patientId}}</p>
-              </v-col>
-              <v-col cols="1" md="4"> 
-             <p>ชื่อผู้ป่วย : {{this.patientName}}</p>
-              </v-col>
-            </v-row>
- 
+       <v-row>
+          <v-col cols="5">
+              <p class="text-left">แพทย์ผู้ออกใบนัด : {{this.EmployeeName}}} </p>
+            </v-col>
+          </v-row>  
+       <v-row>
+            <v-col cols="5">
+              <p class="text-left">รหัสผู้ป่วย : {{this.appointments.patientId}}</p>
+            </v-col>
+            <v-col>
+              <p class="text-left" >ชื่อผู้ป่วย : คุณ{{patientName}}</p>
+            </v-col>
+        </v-row> 
+        <v-row>
+            <v-col cols="5">
+              <p class="text-left">วันที่นัด : {{this.appmDate}}</p>
+            </v-col>
+            <v-col cols="5">
+              <p class="text-left">เวลานัด : {{this.appmDate}}</p>
+            </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="5">
+              <p class="text-left">ห้อง : {{this.appointments.roomId}}</p>
+            </v-col>
+          </v-row> 
+       <v-row>
+          <v-col cols="5">
+              <p class="text-left">รายละเอียด : {{this.appointments.detail}}</p>
+            </v-col>
+          </v-row> 
+
+    </v-form>
+     </v-col>
+    </v-row>
      </v-container>
     </div>
   <!-- OUTPUT -->
-    <v-btn @click="print" style="margin-left: 15px;">Print</v-btn>
-    <v-btn @click="saveAppointments" :class="{ red: !valid, green: valid }">บันทึกข้อมูล</v-btn>
-
-<v-btn block color="secondary" dark>Block Button</v-btn>
-         
+         <v-row justify="center">
+          <v-col cols="2">
+          <v-btn @click="sheet = !sheet" class="mt-2" tile outlined color="amber">
+            <v-icon left>mdi-pencil</v-icon> แก้ไขข้อมูล</v-btn>
+            </v-col> <v-col cols="2">
+          <v-btn @click="saveAppointments" class="mt-2" tile outlined color="deep-purple darken-1">
+            <v-icon left>save</v-icon> บันทึกข้อมูลและพิมพ์</v-btn> </v-col> 
+         </v-row>
           
       </v-sheet>
     </v-bottom-sheet>
@@ -255,16 +279,9 @@ export default {
       date : new Date().toISOString().substr(0, 10),
     };
   },
-
+//-----------------------------------------------------------------------METTODS----------------------------
   methods: {
-
-    //ปริ้น
-    print() {
-      // Pass the element id here
-      this.$htmlToPaper('printMe');
-    },
-
-
+    
     /* eslint-disable no-console */
 
     // ดึงข้อมูล Employee ใส่ combobox
@@ -332,6 +349,8 @@ export default {
        .then(response => {
           console.log(response);
           this.$router.push("/viewAppm");
+           //ปริ้น
+          this.$htmlToPaper('printMe');
         })
         .catch(e => {
           console.log(e);
@@ -347,6 +366,7 @@ export default {
      this.getEmployees();
      this.Rooms();
      this.getDurations();
+     this.menu1();
     },
 
     

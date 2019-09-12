@@ -26,7 +26,7 @@ import com.cpe.backend.entity.Employee;;
 public class Appointments {
 
     @Id
-    @SequenceGenerator(name="appointments_seq",sequenceName="appointments_seq")
+    @SequenceGenerator(name="appointments_seq",sequenceName="appointments_seq", initialValue=10000)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="appointments_seq")
     @Column(name = "APPOINTMENTS_ID", unique = true, nullable = true)
     private @NonNull Long id;
