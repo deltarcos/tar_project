@@ -17,7 +17,7 @@
                 block 
                 prepend-icon="accessible" 
                 label="รหัสผู้ป่วย"
-                 v-model="appointments.patientId"     
+                 v-model="appointments.patientId"    
                 :rules="[(v) => !!v || 'กรุณากรอกข้อมูล']"
                 required
                 >
@@ -48,7 +48,6 @@
                 <v-select
                   label="แพทย์ผู้ออกใบนัด"
                   v-model="appointments.employeeId"
-                  
                   :items="employees"
                   item-text="name"
                   item-value="id"
@@ -57,7 +56,7 @@
                   required
                 ></v-select>
               </v-col>
-               </v-row>
+               </v-row> 
           <!-- ///////////จบส่วน เลือกแพทย์ Combobox -->
 
           <!-- เลือกช่วงเวลา Combobox -->
@@ -140,7 +139,8 @@
                   <!--สรุปรายละเอียดการนัด Button Sheet -->
     <v-bottom-sheet v-model="sheet">
       <template v-slot:activator="{ on }">
-        <v-btn prepend-icon="check_box" :class="{ red: !valid, green: valid } " dark v-on="on">สรุปรายละเอียด</v-btn>
+        <v-btn prepend-icon="check_box" :class="{ red: !valid, green: valid } " dark v-on="on" @click="findEmployees">สรุปรายละเอียด</v-btn>
+  
       </template>
   
       <v-sheet class="text-center" height="500px">
@@ -153,15 +153,10 @@
             <v-form v-model="valid" ref="form" >
             <!-- SOURCE -->
           <h1>รายละเอียดการออกใบนัด</h1> <br> 
-           <!--patientName: "",
-      EmployeeName: "",
-      RoomTitle:"",
-      
-      DutationTitle:"",
-      detailPrint:"",-->
+
        <v-row>
           <v-col cols="5">
-              <p class="text-left">แพทย์ผู้ออกใบนัด : {{this.EmployeeName}}} </p>
+              <p class="text-left">แพทย์ผู้ออกใบนัด : {{employeeName}} </p>
             </v-col>
           </v-row>  
        <v-row>
@@ -177,12 +172,12 @@
               <p class="text-left">วันที่นัด : {{this.appmDate}}</p>
             </v-col>
             <v-col cols="5">
-              <p class="text-left">เวลานัด : {{this.appmDate}}</p>
+              <p class="text-left">เวลานัด : {{durationTitle}}</p>
             </v-col>
         </v-row>
         <v-row>
           <v-col cols="5">
-              <p class="text-left">ห้อง : {{this.appointments.roomId}}</p>
+              <p class="text-left">ห้อง : {{roomTitle}}</p>
             </v-col>
           </v-row> 
        <v-row>
@@ -222,27 +217,7 @@
 <script>
 import http from "../http-common"
 import moment from 'moment'
-import Vue from 'vue';
-import VueHtmlToPaper from 'vue-html-to-paper';
 
-const options = {
-  name: '_blank',
-  specs: [
-    'fullscreen=yes',
-    'titlebar=yes',
-    'scrollbars=yes'
-  ],
-  styles: [
-    'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css',
-    'https://unpkg.com/kidlat-css/css/kidlat.css'
-  ]
-}
- 
-Vue.use(VueHtmlToPaper, options);
- 
-// or, using the defaults with no stylesheet
- 
-Vue.use(VueHtmlToPaper);
 
 export default {
 
@@ -265,11 +240,13 @@ export default {
       sheet: false,
       valid: false,
       patientCheck: false,
+
       patientName: "",
-      EmployeeName: "",
-      RoomTitle:"",
-      DutationTitle:"",
+      employeeName: "",
+      roomTitle:"",
+      durationTitle:"",
       detailPrint:"",
+      
       output: null,
       // ส่วนของ DatePicker
       appmDate : new Date().toISOString().substr(0, 10),
@@ -277,6 +254,7 @@ export default {
       modal: false,
       menu2: false,
       date : new Date().toISOString().substr(0, 10),
+      menu1: false
     };
   },
 //-----------------------------------------------------------------------METTODS----------------------------
@@ -338,6 +316,43 @@ export default {
         });
       this.submitted = true;
     },
+    // function ค้นหา Employee ด้วย ID
+    findEmployees() {
+      http
+        .get("/employee/" + this.appointments.employeeId)
+        .then(response => {
+          console.log(response);
+            this.employeeName = response.data.name;
+            this.findRooms();
+            this.findDurations();
+          })
+        .catch(e => {
+          console.log(e);
+        });
+    },
+    findDurations() {
+      http
+        .get("/duration/" + this.appointments.durationId)
+        .then(response => {
+          console.log(response);
+            this.durationTitle = response.data.name;
+            })
+        .catch(e => {
+          console.log(e);
+        });
+        
+    },
+    findRooms() {
+      http
+        .get("/room/" + this.appointments.roomId)
+        .then(response => {
+          console.log(response);
+            this.roomTitle = response.data.title;
+          })
+        .catch(e => {
+          console.log(e);
+        });
+    },
     // function เมื่อกดปุ่ม submit
     saveAppointments() {
       console.log(this.appointments);
@@ -357,7 +372,6 @@ export default {
         });
       this.submitted = true;
     },
-    //ปริ้นใบนัด
     clear() {
       this.$refs.form.reset();
       this.patientCheck = false;
@@ -366,7 +380,9 @@ export default {
      this.getEmployees();
      this.Rooms();
      this.getDurations();
-     this.menu1();
+     this.findEmployees();
+     this.findDurations();
+     this.findRooms();
     },
 
     
@@ -376,6 +392,9 @@ export default {
     this.getEmployees();
     this.getRooms();
     this.getDurations();
+    this.findEmployees();
+    this.findDurations();
+    this.findRooms();
   }
 };
 

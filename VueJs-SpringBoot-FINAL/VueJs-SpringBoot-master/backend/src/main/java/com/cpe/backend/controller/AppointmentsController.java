@@ -56,6 +56,8 @@ public class AppointmentsController {
         return appointmentsRepository.findAll().stream().collect(Collectors.toList());
     }
 
+    
+
     @PostMapping("/appointments/{patient_id}/{employee_id}/{room_id}/{duration_id}/{appmDate}/{detail}")
     public Appointments newVideoRental(Appointments newAppointments,
     @PathVariable long patient_id,
