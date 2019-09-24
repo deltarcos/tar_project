@@ -37,9 +37,9 @@ public class BackendApplication {
 				patientRepository.save(patient); // บันทึก Objcet ชื่อ Patient
 			});
 
-			Stream.of("08:00-10:00 น.", "10:00-12:00 น.", "13:00-15:00 น.", "15:00-17:00 น.").forEach(name -> {
+			Stream.of("08:00-10:00 น.", "10:00-12:00 น.", "13:00-15:00 น.", "15:00-17:00 น.").forEach(time -> {
 				Duration duration = new Duration(); // สร้าง Object Time
-				duration.setName(name); // set ชื่อ (name) ให้ Object ชื่อ Time
+				duration.setTime(time); // set ชื่อ (name) ให้ Object ชื่อ Time
 				durationRepository.save(duration); // บันทึก Objcet ชื่อ Time
 			});
 

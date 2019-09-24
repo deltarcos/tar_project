@@ -27,7 +27,7 @@ public class Duration {
     @Column(name="DURATION_ID",unique = true, nullable = true)
     private @NonNull Long id;
 
-    private @NonNull String name;
+    private @NonNull String time;
 
     @OneToMany(fetch = FetchType.EAGER)
     //mappedBy  = "duration"

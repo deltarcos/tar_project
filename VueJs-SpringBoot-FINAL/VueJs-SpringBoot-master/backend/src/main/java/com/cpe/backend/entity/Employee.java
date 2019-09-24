@@ -29,6 +29,10 @@ public class Employee {
 
     private @NonNull String name;
 
+    private @NonNull String password;
+
+
+    
     @OneToMany(fetch = FetchType.EAGER)
     // mappedBy  = "createdBy"
     private Collection<Appointments> appm;
