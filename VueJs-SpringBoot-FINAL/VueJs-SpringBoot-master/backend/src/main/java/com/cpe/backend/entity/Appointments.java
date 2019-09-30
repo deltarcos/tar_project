@@ -17,7 +17,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 
-import com.cpe.backend.entity.Employee;;
+import com.cpe.backend.entity.DoctorProfile;;
 
 @Data
 @Entity
@@ -40,9 +40,9 @@ public class Appointments {
     @Column(name="DETAIL")
     private @NonNull String detail;
 
-    @ManyToOne(fetch = FetchType.EAGER, targetEntity = Employee.class)
-    @JoinColumn(name = "EMPLOYEE_ID", insertable = true)
-    private Employee createdBy;
+    @ManyToOne(fetch = FetchType.EAGER, targetEntity = DoctorProfile.class)
+    @JoinColumn(name = "DOCTORPROFILE_ID", insertable = true)
+    private DoctorProfile createdBy;
 
     @ManyToOne(fetch = FetchType.EAGER, targetEntity = Room.class)
     @JoinColumn(name = "Room_ID", insertable = true)

@@ -55,8 +55,8 @@
             <v-col>
                 <v-select
                   label="แพทย์ผู้ออกใบนัด"
-                  v-model="appointments.employeeId"
-                  :items="employees"
+                  v-model="appointments.doctorProfileId"
+                  :items="DoctorProfiles"
                   item-text="name"
                   item-value="id"
                   prepend-icon="supervised_user_circle"
@@ -147,7 +147,7 @@
                   <!--สรุปรายละเอียดการนัด Button Sheet -->
     <v-bottom-sheet v-model="sheet">
       <template v-slot:activator="{ on }">
-        <v-btn prepend-icon="check_box" :class="{ red: !valid, green: valid } " dark v-on="on" @click="findEmployees">สรุปรายละเอียด</v-btn>
+        <v-btn prepend-icon="check_box" :class="{ red: !valid, green: valid } " dark v-on="on" @click="findDoctorProfiles">สรุปรายละเอียด</v-btn>
   
       </template>
   
@@ -177,7 +177,7 @@
 
        <v-row>
           <v-col cols="10">
-              <p class="text-left"><strong>แพทย์ผู้ออกใบนัด :</strong> {{employeeName}} </p> 
+              <p class="text-left"><strong>แพทย์ผู้ออกใบนัด :</strong> {{doctorProfileName}} </p> 
             </v-col>
           </v-row>  
        <v-row>
@@ -271,7 +271,7 @@ export default {
     return {
       appointments: {
         patientId: "",
-        employeeId: "",
+        doctorProfileId: "",
         roomId: "",
         durationId: "",
         detail: "",
@@ -284,7 +284,7 @@ export default {
       saveUSC: false,
 
       patientName: "",
-      employeeName: "",
+      doctorProfileName: "",
       roomTitle:"",
       durationTitle:"",
       detailPrint:"",
@@ -307,12 +307,12 @@ export default {
     },
     /* eslint-disable no-console */
 
-    // ดึงข้อมูล Employee ใส่ combobox
-    getEmployees() {
+    // ดึงข้อมูล DoctorProfile ใส่ combobox
+    getDoctorProfiles() {
       http
-        .get("/employee")
+        .get("/doctorprofile")
         .then(response => {
-          this.employees = response.data;
+          this.DoctorProfiles = response.data;
           console.log(response.data);
         })
         .catch(e => {
@@ -363,13 +363,13 @@ export default {
         });
       this.submitted = true;
     },
-    // function ค้นหา Employee ด้วย ID
-    findEmployees() {
+    // function ค้นหา doctorprofile ด้วย ID
+    findDoctorProfiles() {
       http
-        .get("/employee/" + this.appointments.employeeId)
+        .get("/doctorprofile/" + this.appointments.doctorProfileId)
         .then(response => {
           console.log(response);
-            this.employeeName = response.data.name;
+            this.DoctorProfileName = response.data.name;
             this.findRooms();
             this.findDurations();
           })
@@ -405,7 +405,7 @@ export default {
       console.log(this.appointments);
       http
         .post(
-          "/appointments/" + this.appointments.patientId + "/" + this.appointments.employeeId + "/" +this.appointments.roomId +
+          "/appointments/" + this.appointments.patientId + "/" + this.appointments.doctorProfileId + "/" +this.appointments.roomId +
             "/" + this.appointments.durationId + "/" + this.date + "/" + this.appointments.detail,this.appointments 
         )
        .then(response => {
@@ -431,10 +431,10 @@ export default {
       this.sheet= false;
     },
     refreshList() {
-     this.getEmployees();
+     this.getDoctorProfiles();
      this.Rooms();
      this.getDurations();
-     this.findEmployees();
+     this.findDoctorProfiles();
      this.findDurations();
      this.findRooms();
     },
@@ -443,10 +443,10 @@ export default {
     /* eslint-enable no-console */
     },
   mounted() {
-    this.getEmployees();
+    this.getDoctorProfiles();
     this.getRooms();
     this.getDurations();
-    this.findEmployees();
+    this.findDoctorProfiles();
     this.findDurations();
     this.findRooms();
   }

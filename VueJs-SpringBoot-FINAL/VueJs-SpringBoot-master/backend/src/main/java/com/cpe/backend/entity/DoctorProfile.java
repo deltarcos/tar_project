@@ -19,12 +19,12 @@ import javax.persistence.GenerationType;
 @Data
 @Entity
 @NoArgsConstructor
-@Table(name="EMPLOYEE")
-public class Employee {
+@Table(name="DOCTORPROFILE")
+public class DoctorProfile {
     @Id
-    @SequenceGenerator(name="EMPLOYEE_SEQ",sequenceName="EMPLOYEE_SEQ")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="EMPLOYEE_SEQ")
-    @Column(name="EMPLOYEE_ID",unique = true, nullable = true)
+    @SequenceGenerator(name="DoctorProfile_SEQ",sequenceName="DoctorProfile_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="DoctorProfile_SEQ")
+    @Column(name="DOCTORPROFILE_ID",unique = true, nullable = true)
     private @NonNull Long id;
 
     private @NonNull String name;

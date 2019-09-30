@@ -1,10 +1,10 @@
 package com.cpe.backend;
 import com.cpe.backend.entity.Patient;
-import com.cpe.backend.entity.Employee;
+import com.cpe.backend.entity.DoctorProfile;
 import com.cpe.backend.entity.Duration;
 import com.cpe.backend.entity.Room;
 import com.cpe.backend.repository.PatientRepository;
-import com.cpe.backend.repository.EmployeeRepository;
+import com.cpe.backend.repository.DoctorProfileRepository;
 import com.cpe.backend.repository.DurationRepository;
 import com.cpe.backend.repository.RoomRepository;
 
@@ -23,12 +23,12 @@ public class BackendApplication {
 	}
 
 	@Bean
-	ApplicationRunner init(PatientRepository patientRepository, EmployeeRepository employeeRepository, DurationRepository durationRepository, RoomRepository roomRepository) {
+	ApplicationRunner init(PatientRepository patientRepository, DoctorProfileRepository doctorProfileRepository, DurationRepository durationRepository, RoomRepository roomRepository) {
 		return args -> {
 			Stream.of("พญ.ขวัญชนก อังศุภโชติ", "นพ.นครินทร์ สาลีทอง", "นพ.อดิเรก ตรียสรศัย", "นพ.ยิ่งยศ สันติธนานนท์").forEach(name -> {
-				Employee employee = new Employee(); // สร้าง Object Employee
-				employee.setName(name); // set ชื่อ (name) ให้ Object ชื่อ Employee
-				employeeRepository.save(employee); // บันทึก Objcet ชื่อ Employee
+				DoctorProfile doctorProfile = new DoctorProfile(); // สร้าง Object DoctorProfile
+				doctorProfile.setName(name); // set ชื่อ (name) ให้ Object ชื่อ DoctorProfile
+				doctorProfileRepository.save(doctorProfile); // บันทึก Objcet ชื่อ DoctorProfile
 			});
 
 			Stream.of("สมชาย วงษ์ประกอบ", "งามเฉิด สิตถาหุล", "ไตรรงค์ โตสุขุมวงศ์", "รัชพล สดาวรรธน์").forEach(name -> {
@@ -50,7 +50,7 @@ public class BackendApplication {
 			});
 
 			patientRepository.findAll().forEach(System.out::println); // แสดง ข้อมูลทั้งหมดใน Entity Patient บน Terminal
-			employeeRepository.findAll().forEach(System.out::println); // แสดง ข้อมูลทั้งหมดใน Entity Employee บน Terminal
+			doctorProfileRepository.findAll().forEach(System.out::println); // แสดง ข้อมูลทั้งหมดใน Entity DoctorProfile บน Terminal
 			durationRepository.findAll().forEach(System.out::println); // แสดง ข้อมูลทั้งหมดใน Entity Time บน Terminal
 			roomRepository.findAll().forEach(System.out::println); // แสดง ข้อมูลทั้งหมดใน Entity Room บน Terminal
 		};
